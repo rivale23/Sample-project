@@ -1,0 +1,158 @@
+pipeline {
+    agent 
+    {
+        // Use docker image here
+        any
+    }
+    environment 
+    {
+        // get email from git config
+        MAIL = bat (script: ''' git log -1 --pretty=format:%%ae ''',returnStdout: true).trim()
+        CMAKE_GENERATOR = "Unix Makefiles" //MinGW Makefiles
+        MAKE_COMMAND 	= "make"    //mingw32-make
+    }
+    parameters 
+    {
+       //parameters to be passed from jenkins pipeline
+        string(name: 'Parammeter1', defaultValue: 'default', description: "description", trim: true)
+    }
+
+    stages 
+    {
+        stage('Check commits integrity') 
+        {
+            steps 
+            {
+                cmd_command 
+                '''
+                python ./tools/ci_configs/check_commit_message.py
+                '''
+            }
+        }
+
+        stage('Check Clang format') 
+        {
+            steps 
+            {
+                cmd_command 
+                '''
+                python ./tools/ci_configs/check_clang.py
+                '''
+            }
+        }
+
+        stage('Types check') 
+        {
+            steps 
+            {
+                cmd_command
+                '''                              
+                python ./tools/ci_configs/data_format.py
+				'''
+            }
+            
+        }
+        
+
+
+        stage('Build') 
+        {
+            steps 
+            {
+                cmd_command 
+                '''
+                mkdir build
+				cd build
+				cmake -G "${env.CMAKE_GENERATOR}" -S .. -B ./ || exit \$?
+                which make
+                make --version
+				${env.MAKE_COMMAND} || exit \$?
+                '''
+            }
+        }
+
+        stage('Test') 
+        {
+            steps 
+            {
+                //Reads the latest artifact from master to read the total number of warnings from there
+                copyArtifacts filter: 'warnings.report', fingerprintArtifacts: true, projectName: 'project/multi-job/master_branch/'
+                cmd_command 
+                """
+                cd build
+				cmake -G "${env.CMAKE_GENERATOR}" -S .. -B ./ -DUNIT_TESTS=ON -DCOVERAGE=ON  || exit \$?
+				${env.MAKE_COMMAND} 2> ../temp.warnings || exit \$?   
+                ${env.MAKE_COMMAND} coverage
+                cd ..
+                python ./tools/ci_configs/check_warnings.py  $WORKSPACE/warnings.report
+                cp temp.warnings warnings.report
+                """
+                publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/coverage/', reportFiles: 'index.html', reportName: 'Code coverage', reportTitles: ''])
+                archiveArtifacts artifacts: 'warnings.report' // publishes the warnings report to the jenkins artifact
+            }
+        }
+        
+    }
+
+    post 
+    {
+        always {
+            echo "post job message"
+            cmd_command 
+            """
+			rm -rf build
+			"""
+            script 
+            {                
+                if ((env.CHANGE_ID) && (env.CHANGE_ID!="")) 
+                {
+                    if(currentBuild.currentResult == "SUCCESS")
+                    {
+                        prStatus = 'approve'
+                        prMsg = 'successful'
+                    } 
+                    else 
+                    {
+                        prStatus = 'decline'
+                        prMsg = 'not successful'
+                    }                    
+                }
+            }
+        }
+        failure {
+            echo "Build failed"
+            script {
+                cmd_command 
+                """
+                 (git log -1 --pretty=format:%ae | awk '{gsub(/^[ \\t]+| [ \\t]+\$/,""); print  \$0 }') > email.txt 
+                """
+                mailTo = readFile("email.txt")
+                println "Em-ail:to send the error " + mailTo
+
+                emailext body: '''${SCRIPT, template="groovy-html.template"}''',
+                        mimeType: 'text/html',
+                        from: 'email_from@something',
+                        subject: "[Jenkins] ${currentBuild.fullDisplayName}",
+                        replyTo: params.REPLY_TO,
+                        to: mailTo,
+                        recipientProviders: [requestor()]
+                                        
+            }
+        }
+        cleanup {
+            deleteDir()
+        }
+    }
+    // Function to run cmd commands on windows and linux
+    Closure cmd_command(String command, boolean returnStatus=false, boolean returnStdout=false, String encoding='UTF-8') 
+    {
+    if (isUnix()) 
+    {
+        result = sh script: command, returnStatus: returnStatus, returnStdout: returnStdout, encoding: encoding
+    }
+    else 
+    {
+        result = bat script: command, returnStatus: returnStatus, returnStdout: returnStdout, encoding: encoding
+    }
+    return result
+}
