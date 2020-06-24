@@ -1,0 +1,11 @@
+# Specify untracked files to ignore
+# Go to https://www.gitignore.io/ for suitable templates
+build
+bin
+lib
+*.orig
+*.a
+*.log
+*.pyc
+*.idea
+~*
