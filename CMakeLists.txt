@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15.0)
 
 #Name of the project, version and language is specified
-project(SAMPLE_PROJECT VERSION 1.0.0 LANGUAGES C)
+project(SAMPLE_PROJECT VERSION 1.0.0 )
 
 if(UNIX)
     message(STATUS "COMPILING FOR UNIX : ${UNIX}")
@@ -11,38 +11,38 @@ if(UNIX)
 endif(UNIX)
 
 
-## Unit tests should be normally enabled
-# if(UNIT_TESTS)
-#     message("Unit tests are enabled!")
-#     enable_testing()
-#     add_subdirectory(test)
+# Unit tests should be normally enabled
+if(UNIT_TESTS)
+    message("Unit tests are enabled!")
+    enable_testing()
+    add_subdirectory(test)
     
-#     #Code coverage is tied to unit tests. To Enable coverage
-#     # configure cmake with (in addition to testing flag) -DCOVERAGE=ON
-#     if(COVERAGE)
-#     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-#         message("Code coverage enabled!")
-#         set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
-#         include(CodeCoverage)
-#         setup_target_for_coverage_gcovr_html(NAME coverage EXECUTABLE ctest -VV
-#                                             # tests and main executables are excluded from the report
-#                                              EXCLUDE    "${PROJECT_SOURCE_DIR}/test/*" 
-#                                             )
-#     endif()
-# else()
-#     message("Unit tests are disabled!")
-# endif()
+    #Code coverage is tied to unit tests. To Enable coverage
+    # configure cmake with (in addition to testing flag) -DCOVERAGE=ON
+    if(COVERAGE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+        message("Code coverage enabled!")
+        set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
+        include(CodeCoverage)
+        setup_target_for_coverage_gcovr_html(NAME coverage EXECUTABLE ctest -VV
+                                            # tests and main executables are excluded from the report
+                                             EXCLUDE    "${PROJECT_SOURCE_DIR}/test/*" 
+                                            )
+    endif()
+else()
+    message("Unit tests are disabled!")
+endif()
 
 # If you set any CMAKE_ variables, that can go here.
 # 
 # Find packages go here.
 add_subdirectory(include)
-# add_subdirectory(src)
+add_subdirectory(src)
 
 # Adding some executable - Output name matches target name
-add_executable (${PROJECT_NAME} src/main.c)
+add_executable (${PROJECT_NAME} main.c)
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    edr_header_lib
+    header_lib
     )
 
 

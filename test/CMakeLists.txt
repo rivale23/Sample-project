@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15.0)
 
 # Defining the language
-project(edr_global LANGUAGES C)
+project(Sample_project_test LANGUAGES CXX)
 
 # Defining some C flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")

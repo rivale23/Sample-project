@@ -1,37 +1,34 @@
-add_subdirectory(edr_code_conventions)
-add_subdirectory(edr_utilities)
-add_subdirectory(edr_integration_test)
-# add_subdirectory(edr_processor)
-add_subdirectory(edr_activity_handler)
-add_subdirectory(edr_activity_handler_gen)
-add_subdirectory(edr_diagnostic)
-add_subdirectory(edr_memory_buffer)
-add_subdirectory(edr_dssad_buffer)
-add_subdirectory(edr_dssad_task)
-add_subdirectory(edr_counters)
-add_subdirectory(edr_config)
-add_subdirectory(edr_queue)
-add_subdirectory(edr_queue_stress_test)
-add_subdirectory(edr_nvm)
-# add_subdirectory(edr_controller_handler)
-add_subdirectory(edr_rte_ports_handler)
-add_subdirectory(edr_rte_ports_handler_gen)
-add_subdirectory(edr_logger)
-add_subdirectory(edr_logger_format)
-add_subdirectory(edr_logger_buffer)
-add_subdirectory(edr_logger_task)
-add_subdirectory(sil)
-add_subdirectory(edr_signals_handler)
-add_subdirectory(testing_cmocka)
-add_subdirectory(pc_tool)
-add_subdirectory(edr_file_utilities)
-add_subdirectory(edr_time_utilities)
-add_subdirectory(edr_trigger_handler)
-add_subdirectory(edr_trigger_handler_gen)
-add_subdirectory(edr_activations)
-add_subdirectory(edr_crc_utilities)
-add_subdirectory(edr_dataset)
-add_subdirectory(edr_dataset_gen)
-add_subdirectory(edr_generated)
-add_subdirectory(edr_errors_handler)
-add_subdirectory(edr_encryption)
+# We need thread support
+find_package(Threads REQUIRED)
+set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations")
+# Enable ExternalProject CMake module
+include(ExternalProject)
+
+# Download and install GoogleTest
+ExternalProject_Add(
+    gtest
+    URL https://github.com/google/googletest/archive/master.zip
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
+    # Disable install step
+    INSTALL_COMMAND ""
+)
+
+# Get GTest source and binary directories from CMake project
+ExternalProject_Get_Property(gtest source_dir binary_dir)
+
+set(GTEST_INCLUDE_DIR ${source_dir}/googletest/include)
+set(GTEST_LIBRARY_PATH ${binary_dir}/lib/libgtest.a)
+
+file(MAKE_DIRECTORY ${GTEST_INCLUDE_DIR})
+# Create a libgtest target to be used as a dependency by test programs
+add_library(libgtest IMPORTED STATIC GLOBAL)
+
+set_property(TARGET libgtest PROPERTY IMPORTED_LOCATION  ${GTEST_LIBRARY_PATH})
+set_property(TARGET libgtest APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR})
+
+add_dependencies(libgtest gtest)
+# Create a libgmock target to be used as a dependency by test programs
+
+
+enable_testing()
+add_subdirectory(Sorter_test)
