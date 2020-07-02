@@ -10,6 +10,16 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
+            "command": "compile.bat",
+            "problemMatcher": []
+        },
+        {
+            "label": "build debug",
+            "type": "process",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "command": "compile_debug.bat",
             "problemMatcher": []
         },

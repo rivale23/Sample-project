@@ -1,7 +1,8 @@
 
-#include <Sorter.h>
 #include <cstdio>
 #include <gtest/gtest.h>
+
+#include <Sorter.h>
 
 namespace
 {
@@ -38,12 +39,12 @@ class TestClass2
 
 TEST(CodeChallenge2Test, TestWithIntAsComparator)
 {
-
+    Coding2Challenge::Print_test();
     std::vector<std::string> container_1{"a", "b", "c", "d"};
     std::vector<int>         container_2{2, 4, 1, 3};
 
-    std::vector<std::string> expected_values_after_sorting{"c", "a", "d", "b"};
-    // Coding2Challenge::Sorter<std::string, int> sorter{container_1, container_2};
+    std::vector<std::string>                   expected_values_after_sorting{"c", "a", "d", "b"};
+    Coding2Challenge::Sorter<std::string, int> sorter{container_1, container_2};
 
     EXPECT_EQ(container_1, expected_values_after_sorting);
 }
@@ -56,7 +57,7 @@ TEST(CodeChallenge2Test, TestWithStringAsComparator)
 
     std::vector<int> expected_values_after_sorting{4, 1, 3, 2};
 
-    // Coding2Challenge::Sorter<int, std::string> sorter{container_1, container_2};
+    Coding2Challenge::Sorter<int, std::string> sorter{container_1, container_2};
 
     EXPECT_EQ(container_1, expected_values_after_sorting);
 }
@@ -72,7 +73,7 @@ TEST(CodeChallenge2Test, TestWithCustomClass_UsingLengthOfStringAsComparator)
     std::vector<TestClass2> container_testclass2 = {TestClass2("abc"), TestClass2("a"), TestClass2("abcd"),
                                                     TestClass2("")};
 
-    // Coding2Challenge::Sorter<TestClass1, TestClass2> sorter3{container_testclass1, container_testclass2, comparator};
+    Coding2Challenge::Sorter<TestClass1, TestClass2> sorter3{container_testclass1, container_testclass2, comparator};
 
     std::vector<TestClass1> expected_values_after_sorting = {TestClass1(112), TestClass1(3), TestClass1(12),
                                                              TestClass1(1)};

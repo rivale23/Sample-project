@@ -1,14 +1,19 @@
 ﻿cmake_minimum_required (VERSION 3.5)
 
-add_executable(Coding2SortingTest Test.cpp)
+add_executable(Coding2SortingTest 
+    Test.cpp
+)
 
 target_link_libraries(Coding2SortingTest PRIVATE
-            header_lib
+            sorter_lib
             libgtest
-            source_lib
          )
 
 add_test(
     NAME Coding2SortingTest
     COMMAND Coding2SortingTest
+)
+
+add_executable(Coding2SortingTest2
+    Test_copy.c
 )
