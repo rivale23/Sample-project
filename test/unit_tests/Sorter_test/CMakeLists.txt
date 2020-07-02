@@ -14,6 +14,3 @@ add_test(
     COMMAND Coding2SortingTest
 )
 
-add_executable(Coding2SortingTest2
-    Test_copy.c
-)

@@ -25,12 +25,12 @@ add_subdirectory(test)
         message("Code coverage enabled!")
         set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
         include(CodeCoverage)
-        SETUP_TARGET_FOR_COVERAGE(coverage ctest code_cov)
-        # setup_target_for_coverage_gcovr_html(NAME coverage EXECUTABLE ctest -VV
-        #                                     # tests and main executables are excluded from the report
-        #                                      BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/"
-        #                                     #  EXCLUDE    "${PROJECT_SOURCE_DIR}/test/*" 
-        #                                     )
+        # SETUP_TARGET_FOR_COVERAGE(coverage ctest code_cov)
+        setup_target_for_coverage_gcovr_html(NAME coverage EXECUTABLE ctest -VV
+                                            # tests and main executables are excluded from the report
+                                             BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/"
+                                            #  EXCLUDE    "${PROJECT_SOURCE_DIR}/test/*" 
+                                            )
     endif()
 else()
     message("Unit tests are disabled!")
