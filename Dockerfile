@@ -14,7 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 # Copy the Python script from your computer to  into the docker image
-COPY Learning/Python/canvas.py .
 COPY Learning/Python/templates/index.html ./templates/
 COPY Learning/Python/webpage.py .
 
