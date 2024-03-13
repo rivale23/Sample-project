@@ -20,8 +20,9 @@ This repository contains a Dockerfile and a Python script that utilizes Turtle G
     docker run -p 5000:5000 docker-git-tutorial
     ```
 
+3. While the docker container is running, you will see the address you can access to see the code. just open your browser and go to: http://127.0.0.1:5000 or http://172.17.0.2:5000
 
-3. You can exit by pressing control+c
+4. You can exit by pressing control+c
 
 ## Notes
 
